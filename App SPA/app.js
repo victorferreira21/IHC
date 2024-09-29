@@ -1,9 +1,9 @@
-const apiURL = 'http://localhost:3000/todos';
+const apiURL = 'http://localhost:3000/afazeres';
 const membersURL = 'http://localhost:3000/members';
 
-const todoInput = document.getElementById('todo-input');
-const addTodoButton = document.getElementById('add-todo');
-const todoList = document.getElementById('todo-list');
+const afazerInput = document.getElementById('afazer-input');
+const addAfazerButton = document.getElementById('add-afazer');
+const afazerList = document.getElementById('afazer-list');
 const memberSelect = document.getElementById('member-select');
 
 const fetchMembers = async () => {
@@ -13,6 +13,7 @@ const fetchMembers = async () => {
 };
 
 const renderMembers = (members) => {
+    memberSelect.innerHTML = '';
     members.forEach(member => {
         const option = document.createElement('option');
         option.value = member.name;
@@ -21,33 +22,33 @@ const renderMembers = (members) => {
     });
 };
 
-const fetchTodos = async () => {
+const fetchAfazeres = async () => {
     const response = await fetch(apiURL);
-    const todos = await response.json();
-    renderTodos(todos);
+    const afazeres = await response.json();
+    renderAfazeres(afazeres);
 };
 
-const renderTodos = (todos) => {
-    todoList.innerHTML = '';
-    todos.forEach(todo => {
+const renderAfazeres = (afazeres) => {
+    afazerList.innerHTML = '';
+    afazeres.forEach(afazer => {
         const li = document.createElement('li');
         li.className = 'list-group-item d-flex justify-content-between align-items-center';
         li.innerHTML = `
-            ${todo.text} (Responsável: ${todo.member})
-            <button data-id="${todo.id}" class="btn btn-danger btn-sm">Excluir</button>
+            ${afazer.text} (Responsável: ${afazer.member})
+            <button data-id="${afazer.id}" class="btn btn-danger btn-sm">Excluir</button>
         `;
-        todoList.appendChild(li);
+        afazerList.appendChild(li);
 
-        li.querySelector('button').addEventListener('click', () => deleteTodo(todo.id));
+        li.querySelector('button').addEventListener('click', () => deleteAfazer(afazer.id));
     });
 };
 
-const addTodo = async () => {
-    const text = todoInput.value;
+const addAfazer = async () => {
+    const text = afazerInput.value;
     const member = memberSelect.value;
     if (!text || !member) return;
 
-    const newTodo = {
+    const newAfazer = {
         text: text,
         completed: false,
         member: member
@@ -58,21 +59,23 @@ const addTodo = async () => {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(newTodo)
+        body: JSON.stringify(newAfazer)
     });
 
-    todoInput.value = '';
-    fetchTodos();
+    afazerInput.value = '';
+    fetchAfazeres();
 };
 
-const deleteTodo = async (id) => {
+const deleteAfazer = async (id) => {
     await fetch(`${apiURL}/${id}`, {
         method: 'DELETE'
     });
-    fetchTodos();
+    fetchAfazeres();
 };
 
-addTodoButton.addEventListener('click', addTodo);
+addAfazerButton.addEventListener('click', addAfazer);
 
-fetchMembers();
-fetchTodos();
+document.addEventListener('DOMContentLoaded', () => {
+    fetchMembers();
+    fetchAfazeres();
+});
